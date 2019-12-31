@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SocketCluster</title>
+    <link href="//fonts.googleapis.com/css?family=Roboto:100,300" rel="stylesheet" type="text/css">
+    <link rel="icon" type="image/png" href="/favicon.ico">
+    <script type="text/javascript" src="./socketcluster.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.js" integrity="sha256-BTlTdQO9/fascB1drekrDVkaKd9PkwBymMlHOiG+qLI=" crossorigin="anonymous"></script>
+    <style>
+      html {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        color: #666666;
+        display: table;
+        font-weight: 100;
+        font-family: 'Roboto', Helvetica, sans-serif;
+      }
+      a {
+        font-weight: 300;
+        color: #72B963;
+      }
+      .container {
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+      }
+      .content {
+        text-align: center;
+        display: inline-block;
+      }
+
+      .title {
+        font-size: 96px;
+        margin-bottom: 20px;
+      }
+
+      .text {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      .small {
+        font-size: 18px;
+      }
+
+      .github-button {
+        padding-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <div class="title">
+          SocketCluster
+        </div>
+        <div class="text">
+          Design is not just what it looks like and feels like. Design is how it works. &mdash; Steve Jobs
+        </div>
+        <div class="text" id="latency">
+        Response Time : 0ms
+        </div>
+        <div class="small">
+          <a href="http://socketcluster.io/#!/docs/getting-started">Getting Started</a> <strong>&middot;</strong>
+          <a href="http://socketcluster.io/#!/docs">Documentation</a>
+        </div>
+        <p class="github-button">
+          <iframe src="https://ghbtns.com/github-btn.html?user=socketcluster&repo=socketcluster&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
+        </p>
+      </div>
+    </div>
+    <script type="text/javascript">
+
+      const options = {
+        port: 8001,
+      };
+
+      // Connect to SocketCluster server
+      const socket = socketCluster.create(options);
+      const latency_update_interval = 5000;
+
+      socket.on('connect', function () {
+        
+        var latency = setInterval(function () {
+          var latency_time;
+          var start_time = Date.now();
+          socket.emit('latency', '', function(err, responseData){
+            latency_time = start_time - Date.now();
+            $('#latency').html('Response Time : ' + latency_time + 'ms');
+          });
+        }, latency_update_interval);
+
+      });
+
+      socket.on('disconnect', function () {
+        clearInterval(latency);
+      });
+
+    </script>
+  </body>
+</html>
